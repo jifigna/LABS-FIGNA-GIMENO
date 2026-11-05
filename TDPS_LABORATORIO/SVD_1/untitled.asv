@@ -1,0 +1,21 @@
+function [theta, valores] = ajustar_curva_svd(x, y)
+    % Asegurarnos de que x e y sean vectores columna
+    x = x(:);
+    y = y(:);
+
+    % 1. Construye D usando operaciones elemento a elemento de MATLAB
+    % Para cada punto, la fila es [x^2, xy, y^2, x, y, 1]
+    D = [x.^2, x.*y, y.^2, x, y, ones(size(x))];
+
+    % 2. Calcula su SVD: D = U*S*V^T
+    [U, S, V] = svd(D);
+
+    % 3. Selecciona la columna de V asociada al menor valor singular
+    % La función svd de MATLAB devuelve los valores singulares ordenados 
+    % de forma descendente en la diagonal de S. Por tanto, el menor 
+    % valor singular corresponde a la última columna.
+    theta = V(:, end);
+
+    % 4. Devuelve ese vector como theta y la diagonal de S como valores
+    valores = diag(S);
+end
