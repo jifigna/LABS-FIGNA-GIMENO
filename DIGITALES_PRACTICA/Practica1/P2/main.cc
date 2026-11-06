@@ -27,6 +27,8 @@ typedef std::complex<float> sampleOutX_t;
 // Number of iterations
 #define TEST_SAMPLES	1000
 
+XTime tStart, tEnd;
+
 
 int main()
 {
@@ -76,26 +78,43 @@ int main()
 	// printf("*******************************************************\n");
 	for (i = 0; i < NFFT; i++)
 	{
-		psrc_ddr[i] = (ne10_fft_cpx_float32_t) ...................;
+		psrc_ddr[i] = (ne10_fft_cpx_float32_t)
+		    {
+		        DataIn[i].real(),
+		        DataIn[i].imag()
+		    };
 	}
 
 	// printf("***  Launch %d iters of FFT test program  ***\n", TEST_SAMPLES);
 	// printf("********************************************************\n");
+
+	XTime_GetTime(&tStart);
+
 	for (int m = 0; m < TEST_SAMPLES; m++)
 	{
-		......................................
+	    ne10_fft_c2c_1d_float32_neon(
+	        pdst_ddr,
+	        psrc_ddr,
+	        cfg,
+	        0
+	    );
 	}
+
+	XTime_GetTime(&tEnd);
+
 
 	// printf("***  Time of execution of FFT test program  ***\n");
 	// printf("********************************************************\n");
+
+
+	double time_avg = 1000000.0 * (double)(tEnd - tStart) / (double)COUNTS_PER_SECOND;
 
 	printf("Time average of execution: %.4f us.\n", time_avg / TEST_SAMPLES);
 
 
 
 	// printf("***  Validation with the golden pattern  ***\n");
-	// printf("********************************************************\n");
-	....................................
+	printf("Time average of execution: %.4f us.\n", time_avg / TEST_SAMPLES);
 
 	
 
