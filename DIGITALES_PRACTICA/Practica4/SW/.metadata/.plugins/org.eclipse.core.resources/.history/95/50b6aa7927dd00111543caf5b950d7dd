@@ -1,0 +1,192 @@
+#include <stdint.h>
+#include <string.h>
+#include "platform.h"
+#include "xil_printf.h"
+#include "xtime_l.h"
+
+
+
+//CONFIGURACION DE LA MEMORIA
+
+
+// Reservamos 4096 bytes para realizar las pruebas.
+// Cada elemento uint32_t ocupa 4 bytes.
+#define N_BYTES 4096
+
+// Array que utilizaremos como zona de pruebas de la DDR.
+uint32_t DDR[N_BYTES / 4];
+
+// Origen contiene los datos que queremos copiar. Destino almacena los datos que hemos leído.
+uint32_t origen[N_BYTES / 4];
+uint32_t destino[N_BYTES / 4];
+
+
+int main()
+{
+    int i;
+    int error;
+
+    XTime inicio, fin;
+
+    // Punteros para acceder a la memoria DDR
+    // utilizando diferentes tamaños de datos.
+    uint8_t *p8 = (uint8_t *)DDR;
+    uint16_t *p16 = (uint16_t *)DDR;
+    uint32_t *p32 = DDR;
+
+
+    init_platform();
+
+
+    //VALIDACION DE ACCESOS DE 8 BITS
+
+    // Escribimos datos de 8 bits en toda la region DDR.
+    for (i = 0; i < N_BYTES; i++)
+    {
+        p8[i] = (uint8_t)i;
+    }
+
+    // Leemos los datos y comprobamos que coinciden con los valores que hemos escrito.
+    error = 0;
+
+    for (i = 0; i < N_BYTES; i++)
+    {
+        if (p8[i] != (uint8_t)i)
+        {
+            error = 1;
+        }
+    }
+
+    // Indicamos si la validacion ha sido correcta.
+    if (error == 0)
+    {
+        xil_printf("Validacion 8 bits: CORRECTA\r\n");
+    }
+    else
+    {
+        xil_printf("Validacion 8 bits: ERROR\r\n");
+    }
+
+
+    //VALIDACION DE ACCESOS DE 16 BITS
+
+    // Escribimos datos de 16 bits en la misma region DDR.
+    // Cada elemento ocupa 2 bytes.
+    for (i = 0; i < N_BYTES / 2; i++)
+    {
+        p16[i] = (uint16_t)i;
+    }
+
+    // Leemos y comprobamos los datos almacenados.
+    error = 0;
+
+    for (i = 0; i < N_BYTES / 2; i++)
+    {
+        if (p16[i] != (uint16_t)i)
+        {
+            error = 1;
+        }
+    }
+
+    if (error == 0)
+    {
+        xil_printf("Validacion 16 bits: CORRECTA\r\n");
+    }
+    else
+    {
+        xil_printf("Validacion 16 bits: ERROR\r\n");
+    }
+
+
+    //VALIDACION DE ACCESOS DE 32 BITS
+
+    // Escribimos datos de 32 bits en la misma region DDR.
+    // Cada elemento ocupa 4 bytes.
+    for (i = 0; i < N_BYTES / 4; i++)
+    {
+        p32[i] = (uint32_t)i;
+    }
+
+    // Leemos y comprobamos los datos almacenados.
+    error = 0;
+
+    for (i = 0; i < N_BYTES / 4; i++)
+    {
+        if (p32[i] != (uint32_t)i)
+        {
+            error = 1;
+        }
+    }
+
+    if (error == 0)
+    {
+        xil_printf("Validacion 32 bits: CORRECTA\r\n");
+    }
+    else
+    {
+        xil_printf("Validacion 32 bits: ERROR\r\n");
+    }
+
+
+    //PREPARACION DE DATOS PARA MEDIR LOS ACCESOS
+
+    // Rellenamos el array origen con datos que posteriormente escribiremos y leeremos desde la memoria DDR.
+    for (i = 0; i < N_BYTES / 4; i++)
+    {
+        origen[i] = i + 100;
+    }
+
+
+    //MEDICION DE ACCESOS INDIVIDUALES
+
+    // Medimos cuanto tiempo tardamos en escribir los datos individualmente en la memoria DDR.
+    XTime_GetTime(&inicio);
+
+    for (i = 0; i < N_BYTES / 4; i++)
+    {
+        p32[i] = origen[i];
+    }
+
+    XTime_GetTime(&fin);
+
+    xil_printf("Escritura individual: %d ticks\r\n", (int)(fin - inicio));
+
+
+    // Medimos cuanto tiempo tardamos en leer los datos individualmente desde la memoria DDR.
+    XTime_GetTime(&inicio);
+
+    for (i = 0; i < N_BYTES / 4; i++)
+    {
+        destino[i] = p32[i];
+    }
+
+    XTime_GetTime(&fin);
+
+    xil_printf("Lectura individual: %d ticks\r\n", (int)(fin - inicio));
+
+
+    // MEDICION DE ACCESOS MEDIANTE MEMCPY
+
+    // Medimos el tiempo necesario para copiar todo el array origen directamente a la memoria DDR.
+    XTime_GetTime(&inicio);
+
+    memcpy(DDR, origen, sizeof(DDR));
+
+    XTime_GetTime(&fin);
+
+    xil_printf("Escritura mediante memcpy: %d ticks\r\n", (int)(fin - inicio));
+
+
+    // Medimos el tiempo necesario para copiar todos los datos almacenados en DDR hacia el array destino.
+    XTime_GetTime(&inicio);
+
+    memcpy(destino, DDR, sizeof(DDR));
+
+    XTime_GetTime(&fin);
+
+    xil_printf("Lectura mediante memcpy: %d ticks\r\n", (int)(fin - inicio));
+
+    cleanup_platform();
+
+    return 0;
+}
