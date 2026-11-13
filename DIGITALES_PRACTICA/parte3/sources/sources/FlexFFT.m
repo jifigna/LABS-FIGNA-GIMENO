@@ -6,6 +6,8 @@ for n=0:N/2-1
     W(n+1)= exp(1)^(-n*i*2*pi/N);
 end;
 
+
+
 dataout= datain;
 
 for m=1:Nstage
