@@ -1,0 +1,86 @@
+PRACTICA SVD – COMPRESION DE IMAGENES REALES
+
+Imagen 1: paisaje volcánico (331 x 496 pixeles)
+Imagen 2: cabina de mando del Concorde (315 x 472 pixeles)
+
+1. ¿Qué estructuras se distinguen con k = 10, k = 20 y k = 50? ¿Qué detalles se pierden?
+
+En la primera imagen, que es el paisaje volcánico, con k = 10 se reconoce la forma general de la montaña y la separación entre el cielo y el suelo, pero la imagen aparece bastante borrosa. Se pierden detalles de las rocas y de la vegetación. Con k = 20 la montaña se distingue algo mejor y se recuperan algunos detalles. Con k = 50 la forma del paisaje se ve mas clara y también se aprecian mejor algunas zonas del terreno y los arbustos, aunque sigue sin tener la misma definición que la original.
+
+En la segunda imagen, la cabina del Concorde, la perdida de detalles se nota mas. Con k = 10 se reconoce la distribución general de la cabina, pero los instrumentos y los mandos aparecen muy difuminados. Con k = 20 se distinguen mejor los paneles y algunos relojes. Con k = 50 la imagen mejora bastante y se reconocen mejor los instrumentos, los asientos y la consola central, aunque los números, botones y detalles pequeños siguen sin verse con claridad.
+
+Por lo que se observa en las imágenes, al aumentar k la reconstrucción se parece mas a la original, pero también se necesita guardar mas información.
+
+2. ¿Disminuye el error al aumentar k? Comprueba también que e_k^2 ≈ 1 - eta_k.
+
+Si, en las dos imágenes el error disminuye cuando aumenta k. En el paisaje, el error pasa de 0,16339 con k = 10 a 0,14611 con k = 20 y a 0,11319 con k = 50. En la cabina del Concorde pasa de 0,24746 a 0,20335 y después a 0,14324.
+
+Esto significa que, al utilizar mas valores singulares, la imagen reconstruida se parece más a la original.
+
+También se cumple aproximadamente la relación e_k^2 = 1 - eta_k. Por ejemplo, para el paisaje con k = 10:
+
+e_10^2 = 0,16339^2 ≈ 0,02670
+1 - eta_10 = 1 - 0,97331 = 0,02669
+
+Los dos valores son prácticamente iguales. Puede haber pequeñas diferencias por el redondeo de los datos que muestra MATLAB.
+
+3. ¿En cual de las dos fotografías resulta mas convincente usar pocos modos?
+
+En el paisaje volcánico resulta mas convincente utilizar pocos modos. Aunque con k = 10 la imagen queda bastante borrosa, se siguen reconociendo la montaña y las zonas principales del paisaje. En cambio, en la cabina del Concorde hay muchos instrumentos, botones y detalles pequeños que se pierden con mas facilidad.
+
+Los resultados también muestran esta diferencia: con k = 10, el paisaje conserva el 97,331 % de la energía y tiene un error de 0,16339. La cabina conserva el 93,876 % y tiene un error mayor, de 0,24746. Por eso, en este experimento el paisaje se representa mejor con pocos modos.
+
+4. ¿Un porcentaje alto de energía conservada garantiza que el texto o los detalles finos sean legibles?
+
+No necesariamente. La energía conservada indica cuanta información total de la imagen se mantiene, pero no asegura que todos los detalles pequeños se vean bien.
+
+Esto se puede observar en la cabina del Concorde. Incluso con k = 50 se conserva el 97,948 % de la energía, pero algunos números, botones y marcas de los instrumentos siguen apareciendo borrosos. Por tanto, tener un porcentaje alto de energía conservada no significa que los detalles pequeños o los textos sean legibles.
+
+5. Calcule la cantidad de bits necesarios para guardar una imagen de tamaño 640 x 480 y el ahorro obtenido con k = 10, k = 20 y k = 50.
+
+Para este apartado se supone que cada dato ocupa 32 bits, como indica el enunciado.
+
+Primero calculo el numero de pixeles de la imagen:
+
+640 x 480 = 307.200 pixeles
+
+La imagen original necesita:
+
+307.200 x 32 = 9.830.400 bits
+
+Para guardar los factores reducidos de la SVD se utiliza la expresión:
+
+B_k = 32 x k x (m + n + 1)
+
+Con m = 640 y n = 480:
+
+m + n + 1 = 640 + 480 + 1 = 1.121
+
+Para k = 10:
+B_10 = 32 x 10 x 1.121 = 358.720 bits
+Ahorro = 9.830.400 - 358.720 = 9.471.680 bits
+
+Para k = 20:
+B_20 = 32 x 20 x 1.121 = 717.440 bits
+Ahorro = 9.830.400 - 717.440 = 9.112.960 bits
+
+Para k = 50:
+B_50 = 32 x 50 x 1.121 = 1.793.600 bits
+Ahorro = 9.830.400 - 1.793.600 = 8.036.800 bits
+
+Resumen:
+
+Rango       Bits almacenados       Bits ahorrados       Ahorro
+Original      9.830.400                  -                 -
+k = 10          358.720             9.471.680          96,35 %
+k = 20          717.440             9.112.960          92,70 %
+k = 50        1.793.600             8.036.800          81,75 %
+
+Se ve que con k = 10 se consigue el mayor ahorro, porque se guardan menos datos. Sin embargo, la imagen reconstruida tiene menos calidad. Al aumentar k se guarda mas información y mejora la reconstrucción, pero el ahorro es menor.
+
+6. ¿Por que guardar A_k como una matriz completa no aprovecha el ahorro de almacenar sus factores?
+
+Porque, si guardamos A_k como una matriz completa, seguimos guardando todos sus pixeles. Aunque la imagen se haya calculado usando un rango pequeño, la matriz reconstruida sigue teniendo el mismo numero de filas y columnas que la original.
+
+El ahorro se consigue guardando por separado los factores reducidos de la SVD: las primeras k columnas de U, los primeros k valores singulares y las primeras k columnas de V. Con esos factores se puede reconstruir la aproximación cuando haga falta. Por eso, guardar la matriz completa no aprovecha el ahorro que se consigue almacenando solamente los factores.
+

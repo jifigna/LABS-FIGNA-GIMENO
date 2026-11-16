@@ -1,0 +1,24 @@
+RESPUESTAS – EJERCICIO 1. AJUSTAR UNA CURVA CON SVD
+
+1. ¿Por qué elegimos el vector singular derecho asociado al menor valor singular?
+
+Porque nuestro objetivo es encontrar los coeficientes de la curva que hagan que el resultado de D·theta sea lo más cercano posible a cero. Al realizar la SVD, los valores singulares aparecen ordenados de mayor a menor, y el último vector de V está asociado al menor valor singular. Por tanto, al elegir ese vector conseguimos minimizar el error algebraico, obteniendo el mejor ajuste posible con este método.
+
+2. ¿Por qué hace falta imponer una norma a los coeficientes?
+
+Porque, si no imponemos ninguna condición, la solución más sencilla sería que todos los coeficientes fueran cero. De esta forma, el error también sería cero, pero no tendríamos ninguna curva. Al imponer que la norma de los coeficientes sea igual a 1, evitamos esa solución trivial y conseguimos una solución que permite representar la curva. Además, los coeficientes pueden multiplicarse por una misma constante sin cambiar la curva que representan, por lo que es necesario fijar una escala.
+
+3. ¿Cómo cambia el ajuste al añadir los outliers? Describe lo que realmente muestran tus figuras y resultados.
+
+En la primera figura, sin outliers, vemos que el ajuste realizado mediante SVD sigue bastante bien la curva de referencia y se aproxima a los puntos originales. Esto indica que el método consigue representar correctamente la curva cuando los datos tienen únicamente un ruido pequeño.
+
+Sin embargo, en la segunda figura, al añadir los 15 outliers, el ajuste cambia bastante. La curva roja se desplaza y aumenta su tamaño respecto a la curva de referencia, por lo que deja de ajustarse tan bien a los puntos originales. Esto ocurre porque los puntos atípicos también se tienen en cuenta al calcular la solución y afectan al resultado final.
+
+Por tanto, al comparar ambas figuras vemos que la presencia de outliers puede modificar considerablemente el ajuste, aunque los puntos originales sean exactamente los mismos.
+
+
+4. ¿Podemos afirmar que este ajuste por SVD es robusto frente a outliers? Justifica tu respuesta con el experimento.
+
+No podemos afirmar que el ajuste por SVD sea robusto frente a outliers. En este experimento vemos que, al añadir solamente 15 puntos atípicos a los 120 puntos originales, la curva obtenida cambia considerablemente y deja de seguir correctamente la curva de referencia. Además, el RMS algebraico pasa de 0.00728774 a 0.361448, es decir, aumenta aproximadamente 49.6 veces.
+
+Esto se debe a que el método tiene en cuenta todos los puntos para calcular el ajuste, sin distinguir entre los puntos que pertenecen a la curva y los que son atípicos. Por tanto, los outliers pueden influir bastante en el resultado y provocar que el ajuste empeore. En este experimento, tanto la representación gráfica como el indicador numérico muestran que el ajuste es sensible a los puntos atípicos.

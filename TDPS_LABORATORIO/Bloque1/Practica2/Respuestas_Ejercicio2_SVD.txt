@@ -1,0 +1,81 @@
+PRACTICA 2: SEPARAR FONDO Y MOVIMIENTO MEDIANTE SVD
+Respuestas a las preguntas
+
+Datos utilizados: secuencia de 90 fotogramas del coche. Las imágenes se han procesado a 320 x 180 pixeles y se han comparado los rangos k = 1, k = 2 y k = 5.
+
+1. ¿Por que un fondo fijo favorece una representación de rango bajo?
+
+Un fondo fijo favorece una representación de rango bajo porque los elementos que aparecen en las imágenes apenas cambian entre un fotograma y otro. En esta secuencia, aunque el coche se acerca a la cámara, el cielo, el horizonte y el terreno permanecen prácticamente iguales durante toda la secuencia.
+
+Esto hace que muchas columnas de la matriz X sean muy parecidas entre si. Si el fondo fuese completamente constante y no hubiese ningún objeto en movimiento, todas las columnas serian iguales y la matriz tendría rango uno.
+
+Por eso, la SVD puede representar gran parte de la información común utilizando muy pocos componentes. En esta prueba, el primer componente recoge gran parte de la información que se repite en las imágenes, principalmente el fondo.
+
+2. ¿Qué diferencias observas entre k = 1, k = 2 y k = 5? ¿Aparecen vehículos o estelas en el fondo estimado?
+
+Al comparar los tres rangos se observa que el fondo estimado incorpora más detalles a medida que aumenta k.
+
+- k = 1: se representa principalmente el fondo que permanece constante, como el cielo, el horizonte y el terreno. El coche aparece principalmente en el residuo, aunque puede quedar una pequeña parte difuminada en el fondo estimado.
+
+- k = 2: se conservan más variaciones de las imágenes. El coche puede empezar a aparecer de forma mas visible en el fondo estimado, aunque todavía se observan diferencias importantes en el residuo.
+
+- k = 5: se conserva mas información de los fotogramas. Parte de la silueta del coche puede aparecer en el fondo estimado, mientras que en el residuo siguen apareciendo las diferencias entre su posición real y la reconstruida.
+
+En esta secuencia no tienen por que aparecer estelas perfectamente definidas. Pueden observarse formas difuminadas del coche debido a las diferentes posiciones que ocupa mientras se acerca a la cámara. Esto muestra que aumentar el rango permite representar más información, pero también puede hacer que parte del movimiento se incorpore al fondo estimado.
+
+3. ¿Disminuye el error de reconstrucción al aumentar k? Comprueba también e_k^2 = 1 - eta_k.
+
+Si. El error de reconstrucción disminuye cuando aumenta k porque se utilizan más componentes de la SVD y se conserva más información de la matriz original.
+
+Los resultados numéricos de la comprobación realizada con los 90 fotogramas son:
+
+Rango       Error relativo e_k       Energia conservada eta_k
+k = 1       0,015577                  99,9757 %
+k = 2       0,013202                  99,9826 %
+k = 5       0,009049                  99,9918 %
+
+Se observa que, al pasar de k = 1 a k = 5, el error disminuye y la energía conservada aumenta.
+
+También se cumple aproximadamente la relación:
+
+e_k^2 = 1 - eta_k
+
+Por ejemplo, para k = 1:
+
+e_1^2 = 0,015577^2 = 0,0002426 aproximadamente
+
+1 - eta_1 = 1 - 0,9997574 = 0,0002426 aproximadamente
+
+Los dos resultados prácticamente coinciden. Esta relación se cumple porque la SVD truncada conserva los primeros k valores singulares y descarta los restantes.
+
+4. ¿Un menor error de reconstrucción implica que se ha separado mejor el fondo? Justifica la respuesta con las imágenes.
+
+No. Un menor error de reconstrucción no significa necesariamente que hayamos separado mejor el fondo.
+
+El error mide cuanto se parece la matriz reconstruida a la matriz original, pero no mide directamente si hemos conseguido eliminar los elementos en movimiento.
+
+En este experimento, al aumentar k de 1 a 5 se representan mas detalles de los fotogramas originales. Sin embargo, algunos de esos detalles corresponden al propio coche. Por eso, con k = 5 parte de su silueta puede aparecer en el fondo estimado.
+
+En cambio, con k = 1 el fondo es mas sencillo y el coche destaca principalmente en el residuo. Esto demuestra que se puede obtener un error de reconstrucción mas pequeño y, al mismo tiempo, una separación menos clara entre fondo y movimiento.
+
+Por tanto, no se puede elegir el mejor rango mirando únicamente el error. También se tiene que observar las imágenes del fondo estimado y del residuo.
+
+5. ¿Qué aparece en el residuo además de los vehículos? ¿Por que no es una detección perfecta?
+
+En el residuo no aparecen solamente el vehículo. También pueden aparecer otros cambios entre los fotogramas:
+
+- Cambios de iluminación del cielo y del terreno.
+- Sombras y reflejos.
+- Diferencias de intensidad entre imágenes.
+- Ruido y pequeños defectos de compresión del video.
+- Cambios de tamaño y posición del coche al acercarse a la cámara.
+
+El residuo no es una detección perfecta porque la SVD no sabe identificar que elementos son coches y cuales forman parte del fondo. Simplemente realiza una aproximación matemática de la matriz original utilizando los primeros componentes y después calcula las diferencias.
+
+Por eso, cualquier elemento que no quede bien representado en el fondo estimado puede aparecer en el residuo.
+
+En definitiva, el residuo permite visualizar los cambios y el movimiento de la secuencia, pero no constituye una segmentación perfecta de los vehículos.
+
+CONCLUSION
+
+En esta secuencia, el fondo permanece bastante estable y por eso el primer componente de la SVD conserva casi toda la energía de la matriz. Al aumentar k disminuye el error de reconstrucción, pero también puede incorporarse parte del coche al fondo estimado. Por tanto, un rango mayor no garantiza una mejor separación entre fondo y movimiento. Es necesario estudiar conjuntamente las métricas y las imágenes del fondo y del residuo.
