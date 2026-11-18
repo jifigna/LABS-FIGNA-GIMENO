@@ -1,6 +1,5 @@
 function mostrar_resultado(X,L,H,W,j,numeroFrame,k)
-% j es el indice de columna; numeroFrame es el numero del fotograma original.
-
+% j es el indice de columna; numeroFrame es el numero del JPEG original.
     I = reshape(X(:,j),H,W);
     B = reshape(L(:,j),H,W);
     R = abs(I-B);
