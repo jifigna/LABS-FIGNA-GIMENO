@@ -1,20 +1,14 @@
 function [X,H,W,indices] = cargar_highway(carpetaInput)
-% Lee la secuencia de KITT adaptada a la estructura de la practica highway.
 % Los archivos se llaman frame_001.png, frame_002.png, etc.
-% VERSION CORREGIDA: secuencia highway de changedetection.net (baseline).
-% Lee in000001.jpg, in000003.jpg, ..., in000399.jpg (200 fotogramas).
 
 % Las imagenes del paquete ya estan en escala de grises y reducidas a
 % 320 x 180 pixeles. Por eso pasoEspacial=1: no hace falta reducirlas otra vez.
 
-    % indices = [1:86 88:91]; % El fotograma 87 no se creo durante el proceso de extracción de fotogramas
-    % pasoEspacial = 1;
-    indices = 1:2:399;   % Propuesta del enunciado: 200 fotogramas, de dos en dos
-    pasoEspacial = 2;    % Un pixel de cada dos en ambas direcciones
+    indices = 1:90; % El fotograma 87 no se creo durante el proceso de extracción de fotogramas
+    pasoEspacial = 1;
 
     for j = 1:numel(indices)
-        % nombre = sprintf('frame_%03d.png',indices(j));
-        nombre = sprintf('in%06d.jpg',indices(j));
+        nombre = sprintf('frame_%03d.png',indices(j));
         ruta = fullfile(carpetaInput,nombre);
 
         if ~exist(ruta,'file')
@@ -24,7 +18,6 @@ function [X,H,W,indices] = cargar_highway(carpetaInput)
         I = imread(ruta);
 
         % En este paquete los PNG son de 16 bits. Tambien admitimos uint8.
-        % (highway: JPEG uint8; la normalizacion con intmax da double(I)/255)
         tipoImagen = class(I);
         if ~isa(I,'uint8') && ~isa(I,'uint16')
             error('Se esperan imagenes PNG uint8 o uint16.');
@@ -39,7 +32,6 @@ function [X,H,W,indices] = cargar_highway(carpetaInput)
         end
 
         % Ya estan reducidas a 320 x 180; pasoEspacial vale 1.
-        % highway: 320 x 240 -> con pasoEspacial = 2 queda 160 x 120.
         I = I(1:pasoEspacial:end,1:pasoEspacial:end);
 
         if j==1

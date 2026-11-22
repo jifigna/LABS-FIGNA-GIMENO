@@ -1,5 +1,4 @@
 function L = aproximar_rango(U,S,V,k)
-% COMPLETAR POR EL ALUMNADO.
 % U,S,V proceden de [U,S,V] = svd(X,'econ').
 % L debe tener el mismo tamano que X y rango a lo sumo k.
 % Conserva las primeras k columnas de U y V y el bloque k x k de S.
